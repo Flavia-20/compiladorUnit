@@ -1,4 +1,4 @@
-lexer grammar lexicoSimples;
+lexer grammar meuLexico;
 
 options { caseInsensitive = true; }
 // Ignora  comentários (/ comentario /)
@@ -19,6 +19,10 @@ VAR: 'VAR';
 FALSE: 'FALSE';
 TRUE: 'TRUE';
 WRITE: 'WRITE';
+
+IF: 'IF';
+THEN: 'THEN';
+ELSE: 'ELSE';
 
 
 //REGRAS OPERADORES
