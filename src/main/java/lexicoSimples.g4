@@ -52,8 +52,6 @@ CTE: ('+' | '-')? [0-9]+ {
 
         // 2 bytes com sinal variam de -32768 a 32767
         if (valor < -32768 || valor > 32767) {
-
-            // Aqui você pode disparar um erro customizado DEPOIS AJUSTAR
             System.err.println("Erro Léxico: Constante " + getText() + " excede 2 bytes!");
         }
     } catch(NumberFormatException e) {
