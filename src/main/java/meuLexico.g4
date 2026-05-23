@@ -1,4 +1,7 @@
 lexer grammar meuLexico;
+@header {
+    package antrl;
+}
 
 options { caseInsensitive = true; }
 // Ignora  comentários (/ comentario /)
@@ -34,20 +37,20 @@ OPNEG: '~';
 
 
 //REGRAS PONTUACOES
+ATRIB: ':=';
 PVIG: ';';
 PONTO: '.';
 DPONTOS: ':';
 VIG: ',';
 ABPAR: '(';
 FPAR: ')';
-ATRIB: ':=';
 
 
-NUMERO_INTEIRO: ('+' | '-')?[0-9]+;
+//NUMERO_INTEIRO: ('+' | '-')?[0-9]+;
 //PARA NÃO ULTRAPASSAR OS 16 CARACTERES
 ID: [a-z][a-z0-9]* {
     if (getText().length() > 16) {
-        setText(getText().substring(0, 16));
+     setText(getText().substring(0, 16));
     }
 } ;
 CTE: ('+' | '-')? [0-9]+ {

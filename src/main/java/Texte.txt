@@ -1,1 +1,4 @@
-PROGRAM meuProg BEGIN VAR x := 10; END.
+PROGRAM meuProg;
+BEGIN
+  x := 10
+END.
