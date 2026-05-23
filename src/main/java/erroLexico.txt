@@ -1,0 +1,4 @@
+PROGRAM teste;
+BEGIN
+y := 10
+END.

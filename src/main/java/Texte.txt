@@ -1,4 +1,6 @@
-PROGRAM meuProg;
+PROGRAM meuPrograma;
+VAR x: INTEGER;
 BEGIN
-  x := 10
+x := 2 + 3 * 4;
+WRITE(x)
 END.

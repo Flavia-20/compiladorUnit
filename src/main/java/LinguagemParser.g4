@@ -1,17 +1,17 @@
 parser grammar LinguagemParser;
 @header {
-    package antrl;
+    package antlr;
 }
 options { tokenVocab=meuLexico; }
 
 // Ela diz: "Aceite qualquer um desses tokens, várias vezes, até o fim do arquivo (EOF)"
 //prog: (ID | CTE | CADEIA | PROGRAM | BEGIN | END | VAR | WRITE | READ | WHILE | IF | THEN | ATRIB | OPAD | OPMULT | OPREL | PVIG | PONTO | VIG)* EOF ;
-prog: PROGRAM ID PVIG decls cmdComp PONTO;
+prog: PROGRAM ID PVIG decls cmdComp PONTO EOF;
 decls:  /* vazio */ | VAR listDecl;
 listDecl: declTip | declTip listDecl;
 declTip: listId DPONTOS tip PVIG;
 listId: ID | ID VIG listId;
-tip: INTEGER | BOOLEAN | CADEIA;
+tip: INTEGER | BOOLEAN | STRING;
 
 cmdComp: BEGIN  listCmd END;
 listCmd: cmd | cmd PVIG listCmd;
@@ -36,6 +36,7 @@ cmdAtrib: ID ATRIB expr;
 expr: expr OPMULT expr   // Prioridade 1: Multiplicação/Divisão
     | expr OPAD expr     // Prioridade 2: Soma/Subtração
     | expr OPREL expr    // Prioridade 3: Comparações (>, <, ==)
+    | expr OPLOG expr
     | fator              // Prioridade 4: Os valores básicos
     ;
 

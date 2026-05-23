@@ -1,6 +1,6 @@
 lexer grammar meuLexico;
 @header {
-    package antrl;
+    package antlr;
 }
 
 options { caseInsensitive = true; }
@@ -22,6 +22,7 @@ VAR: 'VAR';
 FALSE: 'FALSE';
 TRUE: 'TRUE';
 WRITE: 'WRITE';
+STRING: 'STRING';
 
 IF: 'IF';
 THEN: 'THEN';
@@ -57,12 +58,13 @@ CTE: ('+' | '-')? [0-9]+ {
     try {
         int valor = Integer.parseInt(getText());
 
-        // 2 bytes com sinal variam de -32768 a 32767
         if (valor < -32768 || valor > 32767) {
             System.err.println("Erro Léxico: Constante " + getText() + " excede 2 bytes!");
         }
     } catch(NumberFormatException e) {
         System.err.println("Erro Léxico: Constante " + getText() + " excede 2 bytes!");
     }
-} ;
-CADEIA: '"' .*? '"' ;
+};
+
+CADEIA: '"' .*? '"';
+
