@@ -1,4 +1,11 @@
-PROGRAM teste;
+PROGRAM testeLexico;
+VAR
+    x : INTEGER;
 BEGIN
-y := 10
+    x := 10;
+
+    // Aqui está o erro léxico! O símbolo '@' não pertence à linguagem.
+    x := @ 20;
+
+    WRITE(x)
 END.

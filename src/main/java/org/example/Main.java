@@ -15,16 +15,72 @@ import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 public class Main {
+    private static void imprimirTokens(CommonTokenStream tokens) {
+        System.out.println("=========================================");
+        System.out.println("           TOKENS IDENTIFICADOS          ");
+        System.out.println("=========================================");
+        System.out.printf("%-15s %-15s %-15s%n", "TOKEN", "TIPO", "ATRIBUTO");
+
+        for (Token token : tokens.getTokens()) {
+            if (token.getType() == Token.EOF) {
+                continue;
+            }
+
+            String tipo = meuLexico.VOCABULARY.getSymbolicName(token.getType());
+            String lexema = token.getText();
+            String atributo = obterAtributo(token);
+
+            System.out.printf("%-15s %-15s %-15s%n", lexema, tipo, atributo);
+        }
+    }
+
+    private static String obterAtributo(Token token) {
+        String texto = token.getText();
+
+        switch (token.getType()) {
+            case meuLexico.ID:
+            case meuLexico.CTE:
+            case meuLexico.CADEIA:
+                return texto;
+
+            case meuLexico.OPAD:
+                return texto.equals("+") ? "MAIS" : "MENOS";
+
+            case meuLexico.OPMULT:
+                return texto.equals("*") ? "VEZES" : "DIV";
+
+            case meuLexico.OPLOG:
+                return texto.toUpperCase();
+
+            case meuLexico.OPNEG:
+                return "NEG";
+
+            case meuLexico.OPREL:
+                switch (texto) {
+                    case "<": return "MENOR";
+                    case "<=": return "MENIG";
+                    case ">": return "MAIOR";
+                    case ">=": return "MAIG";
+                    case "==": return "IGUAL";
+                    case "<>": return "DIFER";
+                    default: return texto;
+                }
+
+            default:
+                return "-";
+        }
+    }
+
     public static void main(String[] args) {
         try {
-            // 1. Carrega o arquivo de texto
-            String arquivoTeste = "/Users/joaodionizio/GitHub/compiladorUnit/src/main/java/Sucesso.txt";
+            //  Carrega o arquivo de texto
+            String arquivoTeste = "C:\\Users\\flavi\\IdeaProjects\\compiladorUnit\\src\\main\\java\\erroLexico.txt";
             CharStream input = CharStreams.fromFileName(arquivoTeste);
 
-            // 2. Inicia o Lexer
+            //  Inicia o Lexer
             meuLexico lexer = new meuLexico(input);
 
-            BaseErrorListener caoDeGuarda = new BaseErrorListener() {
+            BaseErrorListener Guarda = new BaseErrorListener() {
                 @Override
                 public void syntaxError(Recognizer<?, ?> recognizer,
                                         Object offendingSymbol,
@@ -41,70 +97,55 @@ public class Main {
             };
 
             lexer.removeErrorListeners();
-            lexer.addErrorListener(caoDeGuarda);
+            lexer.addErrorListener(Guarda);
 
-            // 3. Cria os tokens
+            //  Cria os tokens
             CommonTokenStream tokens = new CommonTokenStream(lexer);
 
-            // 4. Imprime os tokens
+            // Imprime os tokens
             tokens.fill();
 
-            System.out.println("=========================================");
-            System.out.println("           TOKENS IDENTIFICADOS          ");
-            System.out.println("=========================================");
-
-            for (Token token : tokens.getTokens()) {
-                if (token.getType() == Token.EOF) {
-                    continue;
-                }
-
-                String tipo = meuLexico.VOCABULARY.getSymbolicName(token.getType());
-                String valor = token.getText();
-
-                System.out.printf(
-                        "%-15s -> %s%n",
-                        tipo,
-                        valor
-                );
-            }
-
             tokens.seek(0);
-            // ====================================================================
 
-            // 5. Inicia o Parser
+            // Inicia o Parser
             LinguagemParser parser = new LinguagemParser(tokens);
 
             parser.removeErrorListeners();
-            parser.addErrorListener(caoDeGuarda);
+            parser.addErrorListener(Guarda);
 
-            // 6. Roda a análise sintática
+            // Roda a análise sintática
             ParseTree tree = parser.prog();
 
-            // 7. Roda a análise semântica
+            // Roda a análise semântica
             System.out.println("\nIniciando Análise Semântica...");
             SemanticoVisitor semantico = new SemanticoVisitor();
             semantico.visit(tree);
-            // ====================================================================
 
-            //  8. Gerador de código
+            // Gerador de código
             System.out.println("Iniciando Geração de Código...");
             GeradorCodigo gerador = new GeradorCodigo();
             gerador.visit(tree);
 
-            // ====================================================================
+            imprimirTokens(tokens);
+
+            System.out.println("\n=========================================");
+            System.out.println("              CÓDIGO GERADO              ");
+            System.out.println("=========================================");
+            System.out.println(gerador.getCodigoGerado());
+
 
             System.out.println("=========================================");
             System.out.println("           RESULTADO DA ANÁLISE          ");
             System.out.println("=========================================");
             System.out.println(tree.toStringTree(parser));
             System.out.println("=========================================");
-            System.out.println("\n✅ Compilação concluída com sucesso (0 erros)!");
+            System.out.println("\n Compilação concluída com sucesso (0 erros)!");
 
         } catch (RuntimeException e) {
-            System.err.println("\n❌ A COMPILAÇÃO FOI INTERROMPIDA!");
+            System.err.println("\n A COMPILAÇÃO FOI INTERROMPIDA!");
             System.err.println("Motivo: " + e.getMessage());
         } catch (Exception e) {
-            System.err.println("\n❌ Erro ao ler o arquivo: " + e.getMessage());
+            System.err.println("\n Erro ao ler o arquivo: " + e.getMessage());
         }
     }
 }

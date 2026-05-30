@@ -42,6 +42,7 @@ expr: expr OPMULT expr   // Prioridade 1: Multiplicação/Divisão
 
 // Regra auxiliar 'fator' para resolver o problema do OPNEG que a professora pediu
 fator: OPNEG fator       // O OPNEG só pode ser aplicado aos itens abaixo
+     | OPAD CTE
      | ID
      | CTE
      | TRUE

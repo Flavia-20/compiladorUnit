@@ -105,6 +105,7 @@ public class SemanticoVisitor extends LinguagemParserBaseVisitor<String> {
         }
 
         if (ctx.CTE() != null) {
+            validarConstanteInteira(ctx);
             return "INTEGER";
         }
 
@@ -133,5 +134,56 @@ public class SemanticoVisitor extends LinguagemParserBaseVisitor<String> {
         }
 
         return null;
+    }
+
+    @Override
+    public String visitCmdIf(LinguagemParser.CmdIfContext ctx) {
+        String tipoCondicao = visit(ctx.expr());
+
+        if (!tipoCondicao.equals("BOOLEAN")) {
+            throw new RuntimeException("Erro Semântico: condição do IF deve ser BOOLEAN.");
+        }
+
+        visit(ctx.cmd(0));
+
+        if (ctx.ELSE() != null) {
+            visit(ctx.cmd(1));
+        }
+
+        return null;
+    }
+
+    @Override
+    public String visitCmdWhile(LinguagemParser.CmdWhileContext ctx) {
+        String tipoCondicao = visit(ctx.expr());
+
+        if (!tipoCondicao.equals("BOOLEAN")) {
+            throw new RuntimeException("Erro Semântico: condição do WHILE deve ser BOOLEAN.");
+        }
+
+        visit(ctx.cmd());
+
+        return null;
+    }
+
+    private void validarConstanteInteira(LinguagemParser.FatorContext ctx) {
+        String texto = ctx.CTE().getText();
+        boolean negativo = ctx.OPAD() != null && ctx.OPAD().getText().equals("-");
+
+        try {
+            long valor = Long.parseLong(texto);
+            long limite = negativo ? 32768 : 32767;
+
+            if (valor > limite) {
+                String sinal = negativo ? "-" : "";
+                throw new RuntimeException(
+                        "Erro Léxico: Constante " + sinal + texto + " excede 2 bytes."
+                );
+            }
+        } catch (NumberFormatException e) {
+            throw new RuntimeException(
+                    "Erro Léxico: Constante " + texto + " excede 2 bytes."
+            );
+        }
     }
 }
