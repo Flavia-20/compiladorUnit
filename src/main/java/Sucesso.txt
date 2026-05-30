@@ -1,0 +1,12 @@
+PROGRAM teste;
+VAR
+x: INTEGER;
+y: INTEGER;
+flag: BOOLEAN;
+BEGIN
+x := 2 + 3 * 4;
+y := x + 1;
+flag := x > y;
+WRITE(x);
+WRITE(y)
+END.

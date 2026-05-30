@@ -1,6 +1,5 @@
 PROGRAM meuPrograma;
 VAR x: INTEGER;
 BEGIN
-x := 2 + 3 * 4;
-WRITE(x)
+y := 10
 END.
