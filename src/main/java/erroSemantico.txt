@@ -1,5 +1,0 @@
-PROGRAM meuPrograma;
-VAR x: INTEGER;
-BEGIN
-y := 10
-END.
