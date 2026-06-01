@@ -116,23 +116,7 @@ public class Main {
             // Roda a análise sintática
             ParseTree tree = parser.prog();
 
-            // Roda a análise semântica
-            System.out.println("\nIniciando Análise Semântica...");
-            SemanticoVisitor semantico = new SemanticoVisitor();
-            semantico.visit(tree);
-
-            // Gerador de código
-            System.out.println("Iniciando Geração de Código...");
-            GeradorCodigo gerador = new GeradorCodigo();
-            gerador.visit(tree);
-
             imprimirTokens(tokens);
-
-            System.out.println("\n=========================================");
-            System.out.println("              CÓDIGO GERADO              ");
-            System.out.println("=========================================");
-            System.out.println(gerador.getCodigoGerado());
-
 
             System.out.println("=========================================");
             System.out.println("           RESULTADO DA ANÁLISE          ");

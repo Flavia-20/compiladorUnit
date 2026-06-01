@@ -4,48 +4,89 @@ parser grammar LinguagemParser;
 }
 options { tokenVocab=meuLexico; }
 
-// Ela diz: "Aceite qualquer um desses tokens, várias vezes, até o fim do arquivo (EOF)"
-//prog: (ID | CTE | CADEIA | PROGRAM | BEGIN | END | VAR | WRITE | READ | WHILE | IF | THEN | ATRIB | OPAD | OPMULT | OPREL | PVIG | PONTO | VIG)* EOF ;
+@members {
+    private static final long LIMITE_CTE_SEM_SINAL = Short.MAX_VALUE;
+    private static final long LIMITE_CTE_COM_SINAL_NEGATIVO = -(long) Short.MIN_VALUE;
+
+    private void validarConstanteSemSinal(Token numero) {
+        long valor = Long.parseLong(numero.getText());
+
+        if (valor > LIMITE_CTE_SEM_SINAL) {
+            erroConstante(numero);
+        }
+    }
+
+    private void validarConstanteAssinada(Token sinal, Token numero) {
+        long valor = Long.parseLong(numero.getText());
+        long limite = sinal.getText().equals("-")
+            ? LIMITE_CTE_COM_SINAL_NEGATIVO
+            : LIMITE_CTE_SEM_SINAL;
+
+        if (valor > limite) {
+            erroConstante(numero);
+        }
+    }
+
+    private void erroConstante(Token numero) {
+        throw new RuntimeException(
+            "Erro Lexico: Constante " + numero.getText() +
+            " excede 2 bytes na linha " + numero.getLine() +
+            ", coluna " + numero.getCharPositionInLine() + "."
+        );
+    }
+}
+
 prog: PROGRAM ID PVIG decls cmdComp PONTO EOF;
-decls:  /* vazio */ | VAR listDecl;
-listDecl: declTip | declTip listDecl;
+
+decls: VAR listDecl | ;
+listDecl: declTip+;
 declTip: listId DPONTOS tip PVIG;
-listId: ID | ID VIG listId;
+listId: ID (VIG ID)*;
 tip: INTEGER | BOOLEAN | STRING;
 
-cmdComp: BEGIN  listCmd END;
-listCmd: cmd | cmd PVIG listCmd;
-cmd: cmdIf | cmdWhile | cmdRead | cmdWrite | cmdAtrib | cmdComp;
+cmdComp: BEGIN listCmd? END;
+listCmd: cmd (PVIG cmd)* PVIG?;
 
-cmdIf: IF expr THEN cmd | IF expr THEN cmd ELSE cmd;
+cmd: cmdCasado | cmdAberto;
 
-cmdWhile: WHILE expr DO cmd;
+cmdCasado
+    : cmdBasico
+    | IF expr THEN cmdCasado ELSE cmdCasado
+    | WHILE expr DO cmdCasado
+    ;
+
+cmdAberto
+    : IF expr THEN cmd
+    | IF expr THEN cmdCasado ELSE cmdAberto
+    | WHILE expr DO cmdAberto
+    ;
+
+cmdBasico: cmdRead | cmdWrite | cmdAtrib | cmdComp;
 
 cmdRead: READ ABPAR listId FPAR;
 cmdWrite: WRITE ABPAR listW FPAR;
-listW: elemW | elemW VIG listW;
-elemW: expr | CADEIA;
+listW: elemW (VIG elemW)*;
+elemW: expr;
 
 cmdAtrib: ID ATRIB expr;
 
-//expr: expr OPREL expr | expr OPAD expr | expr OPMULT | expr;
-//expr: ID | CTE | ABPAR expr FPAR | TRUE | FALSE | OPNEG expr;
+expr: CADEIA | exprLogica;
+exprLogica: exprRel (OPLOG exprRel)*;
+exprRel: exprArit (OPREL exprArit)?;
+exprArit: termo (OPAD termo)*;
+termo: fator (OPMULT fator)*;
 
+fator: OPNEG fator
+     | cteAssinada
+     | fatorPrimario
+     ;
 
-// Regra principal de Expressão (com a precedência matemática correta)
-expr: expr OPMULT expr   // Prioridade 1: Multiplicação/Divisão
-    | expr OPAD expr     // Prioridade 2: Soma/Subtração
-    | expr OPREL expr    // Prioridade 3: Comparações (>, <, ==)
-    | expr OPLOG expr
-    | fator              // Prioridade 4: Os valores básicos
-    ;
+cteAssinada: sinal=OPAD numero=CTE { validarConstanteAssinada($sinal, $numero); };
 
-// Regra auxiliar 'fator' para resolver o problema do OPNEG que a professora pediu
-fator: OPNEG fator       // O OPNEG só pode ser aplicado aos itens abaixo
-     | OPAD CTE
-     | ID
-     | CTE
+fatorPrimario
+     : ID
+     | numero=CTE { validarConstanteSemSinal($numero); }
      | TRUE
      | FALSE
-     | ABPAR expr FPAR
+     | ABPAR exprLogica FPAR
      ;

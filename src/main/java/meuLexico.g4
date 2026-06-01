@@ -4,9 +4,35 @@ lexer grammar meuLexico;
 }
 
 options { caseInsensitive = true; }
-// Ignora  comentários (/ comentario /)
+
+@members {
+    private static final long LIMITE_CTE_COM_SINAL_NEGATIVO = -(long) Short.MIN_VALUE;
+
+    private void validarConstanteBruta() {
+        try {
+            long valor = Long.parseLong(getText());
+
+            if (valor > LIMITE_CTE_COM_SINAL_NEGATIVO) {
+                erroLexico("Constante " + getText() + " excede 2 bytes");
+            }
+        } catch (NumberFormatException e) {
+            erroLexico("Constante " + getText() + " excede 2 bytes");
+        }
+    }
+
+    private void erroLexico(String mensagem) {
+        throw new RuntimeException(
+            "Erro Lexico: " + mensagem +
+            " na linha " + getLine() +
+            ", coluna " + _tokenStartCharPositionInLine + "."
+        );
+    }
+}
+
+// Comentarios de linha
 COMMENT: '//' ~[\r\n]* -> skip;
-// 3. Regra para ignorar espaços em branco (O PDF do seu projeto exige isso)
+
+// Espacos em branco entre tokens
 WS: [ \t\r\n]+ -> skip ;
 
 // Regras para tokens
@@ -47,24 +73,22 @@ ABPAR: '(';
 FPAR: ')';
 
 
-//NUMERO_INTEIRO: ('+' | '-')?[0-9]+;
-//PARA NÃO ULTRAPASSAR OS 16 CARACTERES
+// Identificadores com no maximo 16 caracteres
 ID: [a-z][a-z0-9]* {
     if (getText().length() > 16) {
      setText(getText().substring(0, 16));
     }
 } ;
-CTE: ('+' | '-')? [0-9]+ {
-    try {
-        int valor = Integer.parseInt(getText());
 
-        if (valor < -32768 || valor > 32767) {
-            System.err.println("Erro Léxico: Constante " + getText() + " excede 2 bytes!");
-        }
-    } catch(NumberFormatException e) {
-        System.err.println("Erro Léxico: Constante " + getText() + " excede 2 bytes!");
-    }
+// O sinal fica na gramatica sintatica como OPAD CTE, para nao quebrar 2+3.
+CTE: [0-9]+ { validarConstanteBruta(); };
+
+CADEIA: '"' ~["\r\n]* '"';
+
+CADEIA_NAO_FECHADA: '"' ~["\r\n]* {
+    erroLexico("cadeia nao fechada");
 };
 
-CADEIA: '"' .*? '"';
-
+CARACTERE_INVALIDO: . {
+    erroLexico("caractere invalido '" + getText() + "'");
+};
