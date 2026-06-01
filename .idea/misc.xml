@@ -5,7 +5,7 @@
       <list>
         <PerGrammarGenerationSettings>
           <option name="fileName" value="$PROJECT_DIR$/src/main/java/LinguagemSimples.g4" />
-          <option name="autoGen" value="true" />
+          <option name="autoGen" value="false" />
           <option name="outputDir" value="C:\Users\flavi\IdeaProjects\compiladorUnit\src\main\java\antrl" />
           <option name="libDir" value="C:\Users\flavi\IdeaProjects\compiladorUnit\src\main\java\antrl" />
           <option name="encoding" value="" />
@@ -15,7 +15,7 @@
         </PerGrammarGenerationSettings>
         <PerGrammarGenerationSettings>
           <option name="fileName" value="$PROJECT_DIR$/src/main/java/lexicoSimples.g4" />
-          <option name="autoGen" value="true" />
+          <option name="autoGen" value="false" />
           <option name="outputDir" value="C:\Users\flavi\IdeaProjects\compiladorUnit\src\main\java\antrl" />
           <option name="libDir" value="" />
           <option name="encoding" value="" />
@@ -25,7 +25,7 @@
         </PerGrammarGenerationSettings>
         <PerGrammarGenerationSettings>
           <option name="fileName" value="$PROJECT_DIR$/src/main/java/meuLexico.g4" />
-          <option name="autoGen" value="true" />
+          <option name="autoGen" value="false" />
           <option name="outputDir" value="C:\Users\flavi\IdeaProjects\compiladorUnit\src\main\java\antlr" />
           <option name="libDir" value="" />
           <option name="encoding" value="" />
@@ -35,7 +35,7 @@
         </PerGrammarGenerationSettings>
         <PerGrammarGenerationSettings>
           <option name="fileName" value="$PROJECT_DIR$/src/main/java/LinguagemParser.g4" />
-          <option name="autoGen" value="true" />
+          <option name="autoGen" value="false" />
           <option name="outputDir" value="C:\Users\flavi\IdeaProjects\compiladorUnit\src\main\java\antlr" />
           <option name="libDir" value="C:\Users\flavi\IdeaProjects\compiladorUnit\src\main\java\antlr" />
           <option name="encoding" value="" />
