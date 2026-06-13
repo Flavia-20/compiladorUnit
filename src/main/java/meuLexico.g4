@@ -75,9 +75,16 @@ FPAR: ')';
 
 // Identificadores com no maximo 16 caracteres
 ID: [a-z][a-z0-9]* {
-    if (getText().length() > 16) {
-     setText(getText().substring(0, 16));
+    String textoOriginal = getText();
+    String textoNormalizado = textoOriginal.toLowerCase();
+
+    if (textoNormalizado.length() > 16) {
+        textoNormalizado = textoNormalizado.substring(0, 16);
+        System.err.println("Aviso: identificador '" + textoOriginal
+            + "' truncado para '" + textoNormalizado + "'.");
     }
+
+    setText(textoNormalizado);
 } ;
 
 // O sinal fica na gramatica sintatica como OPAD CTE, para nao quebrar 2+3.

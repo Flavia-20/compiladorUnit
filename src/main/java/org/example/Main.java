@@ -3,6 +3,13 @@ package org.example;
 // Imports das suas classes geradas
 import antlr.LinguagemParser;
 import antlr.meuLexico;
+import org.example.compilador.codigofinal.GeradorCodigoFinal;
+import org.example.compilador.intermediario.GeradorCodigoIntermediario;
+import org.example.compilador.intermediario.CodigoIntermediario;
+import org.example.compilador.otimizacao.Otimizador;
+import org.example.compilador.semantico.AnalisadorSemantico;
+import org.example.compilador.semantico.DadosSemanticos.ResultadoSemantico;
+import org.example.compilador.semantico.DadosSemanticos.Simbolo;
 
 // Imports do ANTLR
 import org.antlr.v4.runtime.BaseErrorListener;
@@ -12,7 +19,6 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.tree.ParseTree;
 
 public class Main {
     private static void imprimirTokens(CommonTokenStream tokens) {
@@ -71,10 +77,33 @@ public class Main {
         }
     }
 
+    private static void imprimirTabelaSimbolos(ResultadoSemantico resultadoSemantico) {
+        System.out.println("=========================================");
+        System.out.println("              TABELA DE SIMBOLOS         ");
+        System.out.println("=========================================");
+        System.out.printf("%-20s %-15s %-15s%n", "IDENTIFICADOR", "TIPO", "DESLOCAMENTO");
+
+        for (Simbolo simbolo : resultadoSemantico.getTabelaSimbolos().todos()) {
+            System.out.printf("%-20s %-15s %-15s%n",
+                    simbolo.getNome(), simbolo.getTipo(), simbolo.getDeslocamento());
+        }
+    }
+
+    private static void imprimirBloco(String titulo, String conteudo) {
+        System.out.println("=========================================");
+        System.out.println(titulo);
+        System.out.println("=========================================");
+        System.out.print(conteudo);
+
+        if (!conteudo.endsWith(System.lineSeparator())) {
+            System.out.println();
+        }
+    }
+
     public static void main(String[] args) {
         try {
             //  Carrega o arquivo de texto
-            String arquivoTeste = "C:\\Users\\flavi\\IdeaProjects\\compiladorUnit\\src\\main\\java\\erroLexico.txt";
+            String arquivoTeste = "/Users/joaodionizio/GitHub/compiladorUnit/src/main/java/erroLexico.txt";
             CharStream input = CharStreams.fromFileName(arquivoTeste);
 
             //  Inicia o Lexer
@@ -83,7 +112,7 @@ public class Main {
             BaseErrorListener Guarda = new BaseErrorListener() {
                 @Override
                 public void syntaxError(Recognizer<?, ?> recognizer,
-                                        Object offendingSymbol,
+                                        Object offendingSimbolo,
                                         int line,
                                         int charPositionInLine,
                                         String msg,
@@ -114,15 +143,31 @@ public class Main {
             parser.addErrorListener(Guarda);
 
             // Roda a análise sintática
-            ParseTree tree = parser.prog();
+            LinguagemParser.ProgContext tree = parser.prog();
 
             imprimirTokens(tokens);
 
             System.out.println("=========================================");
-            System.out.println("           RESULTADO DA ANÁLISE          ");
+            System.out.println("        RESULTADO DA ANALISE SINTATICA   ");
             System.out.println("=========================================");
             System.out.println(tree.toStringTree(parser));
-            System.out.println("=========================================");
+
+            AnalisadorSemantico analisadorSemantico = new AnalisadorSemantico();
+            ResultadoSemantico resultadoSemantico = analisadorSemantico.analisar(tree);
+            imprimirTabelaSimbolos(resultadoSemantico);
+
+            GeradorCodigoIntermediario geradorIntermediario = new GeradorCodigoIntermediario(resultadoSemantico);
+            CodigoIntermediario codigoIntermediario = geradorIntermediario.gerar(tree);
+            imprimirBloco("          CODIGO INTERMEDIARIO (TAC)     ", codigoIntermediario.formatar());
+
+            Otimizador otimizador = new Otimizador();
+            CodigoIntermediario codigoOtimizado = otimizador.otimizar(codigoIntermediario);
+            imprimirBloco("              TAC OTIMIZADO              ", codigoOtimizado.formatar());
+
+            GeradorCodigoFinal geradorFinal = new GeradorCodigoFinal();
+            String codigoFinal = geradorFinal.gerar(codigoOtimizado);
+            imprimirBloco("        CODIGO FINAL (ASSEMBLY X86)      ", codigoFinal);
+
             System.out.println("\n Compilação concluída com sucesso (0 erros)!");
 
         } catch (RuntimeException e) {
