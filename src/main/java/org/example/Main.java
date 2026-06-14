@@ -2,6 +2,7 @@ package org.example;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 // Imports das suas classes geradas
@@ -171,9 +172,10 @@ public class Main {
             GeradorCodigoFinal geradorFinal = new GeradorCodigoFinal();
             String codigoFinal = geradorFinal.gerar(codigoOtimizado);
             imprimirBloco("        CODIGO FINAL (ASSEMBLY X86)      ", codigoFinal);
-            Files.write(Paths.get("saida.asm"), codigoFinal.getBytes(StandardCharsets.UTF_8));
+            Path arquivoSaida = Paths.get("saida.asm").toAbsolutePath();
+            Files.write(arquivoSaida, codigoFinal.getBytes(StandardCharsets.UTF_8));
 
-            System.out.println("Arquivo saida.asm gerado com sucesso.");
+            System.out.println("Arquivo saida.asm gerado em: " + arquivoSaida);
 
             System.out.println("\n Compilação concluída com sucesso (0 erros)!");
 
