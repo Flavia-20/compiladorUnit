@@ -145,6 +145,42 @@ public class AppTest
         assertTrue(otimizado.formatar().contains("<< 2"));
     }
 
+    public void testConstanteForaDoLimiteGeraErroSemantico()
+    {
+        try {
+            parse(
+                    "PROGRAM teste;\n" +
+                    "VAR\n" +
+                    "x: INTEGER;\n" +
+                    "BEGIN\n" +
+                    "x := 40000\n" +
+                    "END.");
+            fail("Era esperado erro de overflow de constante.");
+        } catch (RuntimeException e) {
+            assertTrue(e.getMessage().contains("Erro Semantico: overflow de constante inteira"));
+            assertTrue(e.getMessage().contains("-32768 a 32767"));
+        }
+    }
+
+    public void testComparacaoComStringGeraErroSemantico()
+    {
+        LinguagemParser.ProgContext tree = parse(
+                "PROGRAM teste;\n" +
+                "VAR\n" +
+                "a, b: STRING;\n" +
+                "flag: BOOLEAN;\n" +
+                "BEGIN\n" +
+                "flag := a == b\n" +
+                "END.");
+
+        try {
+            new AnalisadorSemantico().analisar(tree);
+            fail("Era esperado erro semantico para comparacao com STRING.");
+        } catch (RuntimeException e) {
+            assertTrue(e.getMessage().contains("comparacao com STRING nao suportada"));
+        }
+    }
+
     private LinguagemParser.ProgContext parse(String source)
     {
         meuLexico lexer = new meuLexico(CharStreams.fromString(source));

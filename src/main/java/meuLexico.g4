@@ -13,11 +13,19 @@ options { caseInsensitive = true; }
             long valor = Long.parseLong(getText());
 
             if (valor > LIMITE_CTE_COM_SINAL_NEGATIVO) {
-                erroLexico("Constante " + getText() + " excede 2 bytes");
+                erroOverflowConstante();
             }
         } catch (NumberFormatException e) {
-            erroLexico("Constante " + getText() + " excede 2 bytes");
+            erroOverflowConstante();
         }
+    }
+
+    private void erroOverflowConstante() {
+        throw new RuntimeException(
+            "Erro Semantico: overflow de constante inteira na linha " + getLine() +
+            ", coluna " + _tokenStartCharPositionInLine +
+            ". Valor fora do intervalo de 2 bytes com sinal (-32768 a 32767)."
+        );
     }
 
     private void erroLexico(String mensagem) {

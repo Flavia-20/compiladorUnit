@@ -27,8 +27,9 @@ public class GeradorCodigoFinal {
         codigo.append(System.lineSeparator());
         codigo.append(".text").append(System.lineSeparator());
         codigo.append("_start:").append(System.lineSeparator());
-        codigo.append("    ; Rotinas externas esperadas: _print_integer, _print_boolean, _print_string").append(System.lineSeparator());
-        codigo.append("    ; Rotinas externas esperadas: _read_integer, _read_boolean, _read_string, _copy_string")
+        codigo.append("    ; Rotinas auxiliares como _print_integer e _read_integer sao externas neste projeto didatico.")
+                .append(System.lineSeparator());
+        codigo.append("    ; Tambem sao consideradas externas: _print_boolean, _print_string, _read_boolean, _read_string, _copy_string.")
                 .append(System.lineSeparator());
 
         for (InstrucaoTAC instrucao : programa.getInstrucoes()) {

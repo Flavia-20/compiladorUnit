@@ -7,6 +7,9 @@ BEGIN
 x := 2 + 3 * 4;
 y := x + 1;
 flag := x > y;
-WRITE(x);
-WRITE(y)
+IF flag THEN WRITE(x) ELSE WRITE(y);
+WHILE flag DO BEGIN
+    flag := false;
+    WRITE(y)
+END
 END.

@@ -194,7 +194,9 @@ public class AnalisadorSemantico extends LinguagemParserBaseVisitor<Tipo> {
         Token operador = ctx.OPREL().getSymbol();
         String textoOperador = operador.getText();
 
-        if (textoOperador.equals("<") || textoOperador.equals("<=")
+        if (tipoEsquerda == Tipo.STRING || tipoDireita == Tipo.STRING) {
+            registrarErro(operador, "Erro Semantico: comparacao com STRING nao suportada");
+        } else if (textoOperador.equals("<") || textoOperador.equals("<=")
                 || textoOperador.equals(">") || textoOperador.equals(">=")) {
             exigirInteiro(tipoEsquerda, operador, "operador relacional '" + textoOperador + "'");
             exigirInteiro(tipoDireita, operador, "operador relacional '" + textoOperador + "'");

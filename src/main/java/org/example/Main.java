@@ -1,5 +1,9 @@
 package org.example;
 
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 // Imports das suas classes geradas
 import antlr.LinguagemParser;
 import antlr.meuLexico;
@@ -103,7 +107,7 @@ public class Main {
     public static void main(String[] args) {
         try {
             //  Carrega o arquivo de texto
-            String arquivoTeste = "/Users/joaodionizio/GitHub/compiladorUnit/src/main/java/erroLexico.txt";
+            String arquivoTeste = "/Users/joaodionizio/GitHub/compiladorUnit/src/main/java/Sucesso.txt";
             CharStream input = CharStreams.fromFileName(arquivoTeste);
 
             //  Inicia o Lexer
@@ -167,6 +171,9 @@ public class Main {
             GeradorCodigoFinal geradorFinal = new GeradorCodigoFinal();
             String codigoFinal = geradorFinal.gerar(codigoOtimizado);
             imprimirBloco("        CODIGO FINAL (ASSEMBLY X86)      ", codigoFinal);
+            Files.write(Paths.get("saida.asm"), codigoFinal.getBytes(StandardCharsets.UTF_8));
+
+            System.out.println("Arquivo saida.asm gerado com sucesso.");
 
             System.out.println("\n Compilação concluída com sucesso (0 erros)!");
 

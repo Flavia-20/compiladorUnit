@@ -29,9 +29,9 @@ options { tokenVocab=meuLexico; }
 
     private void erroConstante(Token numero) {
         throw new RuntimeException(
-            "Erro Lexico: Constante " + numero.getText() +
-            " excede 2 bytes na linha " + numero.getLine() +
-            ", coluna " + numero.getCharPositionInLine() + "."
+            "Erro Semantico: overflow de constante inteira na linha " + numero.getLine() +
+            ", coluna " + numero.getCharPositionInLine() +
+            ". Valor fora do intervalo de 2 bytes com sinal (-32768 a 32767)."
         );
     }
 }

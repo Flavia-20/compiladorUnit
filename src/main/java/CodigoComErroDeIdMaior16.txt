@@ -1,0 +1,7 @@
+PROGRAM testeIdentificadorLongo;
+VAR
+identificadorMuitoGrande: INTEGER;
+BEGIN
+identificadorMuitoGrande := 10;
+WRITE(identificadorMuitoGrande)
+END.
