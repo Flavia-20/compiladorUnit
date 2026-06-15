@@ -26,6 +26,20 @@ import org.antlr.v4.runtime.Recognizer;
 import org.antlr.v4.runtime.Token;
 
 public class Main {
+    private static Path localizarPastaProjeto(Path arquivoEntrada) {
+        Path pasta = arquivoEntrada.toAbsolutePath().getParent();
+
+        while (pasta != null && !Files.exists(pasta.resolve("pom.xml"))) {
+            pasta = pasta.getParent();
+        }
+
+        if (pasta == null) {
+            throw new RuntimeException("Nao foi possivel localizar a pasta do projeto.");
+        }
+
+        return pasta;
+    }
+
     private static void imprimirTokens(CommonTokenStream tokens) {
         System.out.println("=========================================");
         System.out.println("           TOKENS IDENTIFICADOS          ");
@@ -172,10 +186,12 @@ public class Main {
             GeradorCodigoFinal geradorFinal = new GeradorCodigoFinal();
             String codigoFinal = geradorFinal.gerar(codigoOtimizado);
             imprimirBloco("        CODIGO FINAL (ASSEMBLY X86)      ", codigoFinal);
-            Path arquivoSaida = Paths.get("saida.asm").toAbsolutePath();
+            Path pastaProjeto = localizarPastaProjeto(Paths.get(arquivoTeste));
+            Path arquivoSaida = pastaProjeto.resolve("saida.asm");
             Files.write(arquivoSaida, codigoFinal.getBytes(StandardCharsets.UTF_8));
 
-            System.out.println("Arquivo saida.asm gerado em: " + arquivoSaida);
+            System.out.println("Arquivo saida.asm gerado em: " + arquivoSaida.toAbsolutePath());
+            System.out.println("Tamanho do arquivo: " + Files.size(arquivoSaida) + " bytes.");
 
             System.out.println("\n Compilação concluída com sucesso (0 erros)!");
 
@@ -183,7 +199,7 @@ public class Main {
             System.err.println("\n A COMPILAÇÃO FOI INTERROMPIDA!");
             System.err.println("Motivo: " + e.getMessage());
         } catch (Exception e) {
-            System.err.println("\n Erro ao ler o arquivo: " + e.getMessage());
+            System.err.println("\n Erro ao processar ou salvar o arquivo: " + e.getMessage());
         }
     }
 }
